@@ -1,0 +1,286 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Self-Discovery</title>
+    <style>
+        /* Import Google Sans font */
+        @import url('https://fonts.googleapis.com/css2?family=Google+Sans:wght@400;700&display=swap');
+        
+        body { 
+            font-family: 'Google Sans', sans-serif; 
+            background-color: #f4f4f4; 
+        }
+        .quiz-container { 
+            max-width: 550px; 
+            margin: 50px auto; 
+            padding: 20px; 
+            background: white; 
+            border-radius: 8px; 
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1); 
+        }
+        .question { 
+            font-weight: bold; 
+            margin-bottom: 20px; 
+        }
+        .options { 
+            list-style: none; 
+            padding: 0; 
+        }
+        .options li { 
+            margin: 10px 0; 
+        }
+        .progress { 
+            font-size: 14px; 
+            color: #555; 
+            text-align: right; 
+            margin-bottom: 10px; 
+        }
+        button { 
+            padding: 10px 15px; 
+            background: #28a745; 
+            color: white; 
+            border: none; 
+            border-radius: 5px; 
+            cursor: pointer; 
+        }
+        button:hover { 
+            background: #218838; 
+        }
+    </style>
+    <link rel="icon" href="icons8-for-you.svg" type="image/x-icon">
+</head>
+<body>
+
+<div class="quiz-container">
+    <div id="progress" class="progress">1/12</div>
+    <div id="quiz"></div>
+    <button id="nextBtn" style="display:none;">Next Question</button>
+    <div id="result" style="display:none;"></div>
+</div>
+
+
+
+<script>
+
+
+    const questions = [
+    {
+            question: "You’re running late for an important meeting and get stuck in traffic. What's your first thought?",
+            options: [
+                "Maybe this delay is saving me from something worse. I’ll get there when I get there.",
+                "This is frustrating, but I'll just have to explain myself when I arrive.",
+                "This always happens. What’s the point of trying to be on time?",
+                "I’ll take deep breaths and maybe call ahead to let them know."
+            ],
+            points: [3, 2, 1, 2]
+        },
+        {
+            question: "How do you feel about making long-term plans?",
+            options: [
+                "Excited! There’s so much to look forward to.",
+                "I’ll make plans, but I know things might change, and that’s okay.",
+                "I try, but I tend to focus more on what might go wrong.",
+                "I prefer keeping things flexible—long-term plans often don’t work out anyway."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "You receive mixed feedback on a big project you've worked hard on. What resonates most with you?",
+            options: [
+                "I’ll try to improve based on the feedback and see it as a growth opportunity.",
+                "It’s disappointing, but I’ll focus on the positive parts of the feedback.",
+                "They probably don’t understand my work. I knew this wouldn’t go well.",
+                "It’s a learning experience; I’ll make adjustments as necessary."
+            ],
+            points: [3, 2, 1, 2]
+        },
+        {
+            question: "When you think about the future, you tend to feel...",
+            options: [
+                "Curious and open to whatever happens.",
+                "A bit concerned, but I try to stay optimistic.",
+                "Prepared for the worst but hoping for the best.",
+                "Neutral—it's just too far away to consider seriously."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "If you could change one thing about the world, what would it be?",
+            options: [
+                "More kindness and empathy.",
+                "Less unpredictability and chaos.",
+                "More honesty and straightforwardness.",
+                "More positivity and hope."
+            ],
+            points: [3, 2, 2, 3]
+        },
+        {
+            question: "You make plans with friends, but they cancel last minute. What goes through your mind?",
+            options: [
+                "Well, that gives me time to do something else I enjoy.",
+                "I understand; plans don’t always work out.",
+                "It’s annoying, but I'll get over it soon.",
+                "Figures. I kind of expected this to happen."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "How do you respond to unexpected changes in your day?",
+            options: [
+                "I go with the flow; things usually work out.",
+                "I try to adapt, but I need a minute to adjust.",
+                "I can get frustrated, especially if it disrupts my plans.",
+                "I expect the unexpected; I just take it as it comes."
+            ],
+            points: [3, 2, 1, 2]
+        },
+        {
+            question: "You come across a new challenge at work or school that feels overwhelming. How do you handle it?",
+            options: [
+                "I’ll tackle it step-by-step; it’ll be manageable.",
+                "I’ll look for resources to help and take it as a learning opportunity.",
+                "It’s a challenge, but I don’t get too invested in the outcome.",
+                "I try, but I usually prepare myself for things to go wrong."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "How do you feel when you see others achieving big goals?",
+            options: [
+                "Happy for them and motivated to achieve my own goals.",
+                "Glad for them, but I also think about my own journey.",
+                "It can be a little discouraging, honestly.",
+                "I try not to compare, but sometimes I worry about where I’m at."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "You find a mistake in a project you completed recently. What’s your reaction?",
+            options: [
+                "I’ll just fix it and improve next time.",
+                "Mistakes happen; I’ll take note and move on.",
+                "It’s disappointing, but I’ll figure out a way to correct it.",
+                "This always seems to happen to me."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "How do you approach setting new goals?",
+            options: [
+                "With enthusiasm and big ideas.",
+                "Carefully, with a realistic plan.",
+                "I try to be optimistic but stay cautious.",
+                "I tend to feel more doubtful, but I still try."
+            ],
+            points: [3, 2, 1, 1]
+        },
+        {
+            question: "You're about to try something you’ve never done before. What do you expect?",
+            options: [
+                "It’ll be exciting; I’m open to the experience.",
+                "It might be tough, but I’ll try to learn from it.",
+                "I’ll keep my expectations low to avoid disappointment.",
+                "Not sure, but I’m a little nervous."
+            ],
+            points: [3, 2, 1, 1]
+        }
+        // Add remaining questions here...
+    ];
+
+    let currentQuestionIndex = 0;
+    let score = 0;
+
+    const quizContainer = document.getElementById("quiz");
+    const nextBtn = document.getElementById("nextBtn");
+    const resultContainer = document.getElementById("result");
+    const progress = document.getElementById("progress");
+
+    function loadQuestion() {
+        const question = questions[currentQuestionIndex];
+        quizContainer.innerHTML = `
+            <div class="question">${question.question}</div>
+            <ul class="options">
+                ${question.options.map((option, index) => `
+                    <li>
+                        <label>
+                            <input type="radio" name="option" value="${index}" />
+                            ${option}
+                        </label>
+                    </li>
+                `).join('')}
+            </ul>
+        `;
+        nextBtn.style.display = "none";
+        progress.innerText = `${currentQuestionIndex + 1}/${questions.length}`;
+    }
+
+    function showNextButton() {
+        const options = document.querySelectorAll('input[name="option"]');
+        const isSelected = Array.from(options).some(option => option.checked);
+        nextBtn.style.display = isSelected ? "block" : "none";
+    }
+
+    function showResult() {
+        let resultText = "";
+        if (score <= 20) {
+            resultText = "You tend to approach life with a negative outlook.";
+        } else if (score <= 30) {
+            resultText = "You are a realist, balancing optimism with practicality.";
+        } else {
+            resultText = "You have an optimistic view of life, looking forward to possibilities.";
+        }
+        let resultColor;
+
+// Determine the color based on the result
+if (resultText === "You tend to approach life with a negative outlook.") {
+    resultColor = "red";
+} else if (resultText === "You have an optimistic view of life, looking forward to possibilities.") {
+    resultColor = "green";
+} else if (resultText === "You are a realist, balancing optimism with practicality.") {
+    resultColor = "orange"; // Amber color
+}
+
+// Update the result container with h6 and color styling
+resultContainer.innerHTML = `
+    <h2>
+        <span style="font-size: 1.5em;">Result:</span> </BR>
+        <span style="color: ${resultColor}; font-size: 1em;">${resultText}</span>
+    </h2>`;
+        resultContainer.style.display = "block";
+        quizContainer.style.display = "none";
+        nextBtn.style.display = "none";
+        progress.style.display = "none";
+    }
+
+    nextBtn.addEventListener("click", () => {
+        const selectedOption = document.querySelector('input[name="option"]:checked');
+        if (selectedOption) {
+            score += questions[currentQuestionIndex].points[selectedOption.value];
+        }
+        currentQuestionIndex++;
+
+        if (currentQuestionIndex < questions.length) {
+            loadQuestion();
+        } else {
+            showResult();
+        }
+    });
+
+    quizContainer.addEventListener("change", showNextButton);
+
+    loadQuestion();
+
+    function displayQuestion(index) {
+    const questionText = questions[index].question.split('.');
+    const mainQuestion = questionText[0]; 
+    const followUp = questionText[1] ? questionText[1].trim() : '';
+
+    document.getElementById("question").innerHTML = `<strong>${mainQuestion}.</strong><br><span>${followUp}</span>`;
+    // Display options as usual
+}
+</script>
+
+</body>
+</html>
